@@ -7,7 +7,9 @@ const Input = ({ name, label, type, id, value, placeholder, handleChange }) => {
     margin: "5px 0 22px 0",
     border: "none",
     background: "#f1f1f1",
-    outline: "none"
+    outline: "none",
+    err: false,
+    errMsg: ""
   });
 
   const onFocus = () => {
@@ -41,6 +43,11 @@ const Input = ({ name, label, type, id, value, placeholder, handleChange }) => {
         onChange={handleChange}
         required
       />
+      {state.err ? (
+        <h3 style={{ color: "red" }}>{state.errMsg}</h3>
+      ) : (
+        <div className="noSpace"></div>
+      )}
     </div>
   );
 };
@@ -49,7 +56,6 @@ Input.propTypes = {
   name: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
   handleChange: PropTypes.func.isRequired
 };
 export default Input;

@@ -1,134 +1,144 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import FormControl from "@material-ui/core/FormControl";
-import Button from "@material-ui/core/Button";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 import DataTable from "../DataTable.jsx";
 import Modal from "../Modal.jsx";
 import Input from "../Input.jsx";
-const useStyles = makeStyles(theme => ({
-  container: {
-    display: "flex",
-    flexWrap: "wrap"
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: 200
-  },
-  dense: {
-    marginTop: 19
-  },
-  menu: {
-    width: 200
-  }
-}));
+import Form from "../Form.jsx";
+import Button from "../Button.jsx";
+import Select from "../Select.jsx";
 
 let create = () => {
-  const classes = useStyles();
-
   const [state, setState] = React.useState({
     name: "",
     email: "",
     psw: "",
     desc: "",
+    date: "",
     resource: "",
     action: "",
-    key: ["sn", "name", "action", "resource", "fnc"],
-    head: ["S.N", "Name", "Action", "Resource", "Fnc"],
-    body: [
-      {
-        sn: 1,
-        name: "Apil",
-        resource: "/api/v1/launch",
-        action: "get",
-        fnc: () => {
-          return (
-            <React.Fragment>
-              <button className="btn btn-primary btn-sm" style={{ marginRight: "5px" }}>
-                Edit
-              </button>
-              <button className="btn btn-danger btn-sm" onClick={() => openModal()}>
-                Delete
-              </button>
-            </React.Fragment>
-          );
-        }
-      }
+    key: ["status", "symbol", "phone", "dob"],
+    head: ["Status", "Symbol", "Phone", "Date Of Birth"],
+    body: [],
+    sody: [
+      // {
+      //   sn: 1,
+      //   name: "Apil",
+      //   resource: "/api/v1/launch",
+      //   action: "get",
+      //   fnc: () => {
+      //     return (
+      //       <React.Fragment>
+      //         <button className="btn btn-primary btn-sm" style={{ marginRight: "5px" }}>
+      //           Edit
+      //         </button>
+      //         <button className="btn btn-danger btn-sm" onClick={() => openModal()}>
+      //           Delete
+      //         </button>
+      //       </React.Fragment>
+      //     );
+      //   }
+      // },
+      // {
+      //   sn: 2,
+      //   name: "Apil2",
+      //   resource: "/api/v1/launch",
+      //   action: "get",
+      //   fnc: () => {
+      //     return (
+      //       <React.Fragment>
+      //         <button className="btn btn-primary btn-sm" style={{ marginRight: "5px" }}>
+      //           Edit
+      //         </button>
+      //         <button className="btn btn-danger btn-sm" onClick={() => openModal()}>
+      //           Delete
+      //         </button>
+      //       </React.Fragment>
+      //     );
+      //   }
+      // },
+      // {
+      //   sn: 3,
+      //   name: "Apil3",
+      //   resource: "/api/v1/launch",
+      //   action: "get",
+      //   fnc: () => {
+      //     return (
+      //       <React.Fragment>
+      //         <button className="btn btn-primary btn-sm" style={{ marginRight: "5px" }}>
+      //           Edit
+      //         </button>
+      //         <button className="btn btn-danger btn-sm" onClick={() => openModal()}>
+      //           Delete
+      //         </button>
+      //       </React.Fragment>
+      //     );
+      //   }
+      // },
+      // {
+      //   sn: 4,
+      //   name: "Apil4",
+      //   resource: "/api/v1/launch",
+      //   action: "get",
+      //   fnc: () => {
+      //     return (
+      //       <React.Fragment>
+      //         <button className="btn btn-primary btn-sm" style={{ marginRight: "5px" }}>
+      //           Edit
+      //         </button>
+      //         <button className="btn btn-danger btn-sm" onClick={() => openModal()}>
+      //           Delete
+      //         </button>
+      //       </React.Fragment>
+      //     );
+      //   }
+      // },
+      // {
+      //   sn: 5,
+      //   name: "Apil5",
+      //   resource: "/api/v1/launch",
+      //   action: "get",
+      //   fnc: () => {
+      //     return (
+      //       <React.Fragment>
+      //         <button className="btn btn-primary btn-sm" style={{ marginRight: "5px" }}>
+      //           Edit
+      //         </button>
+      //         <button className="btn btn-danger btn-sm" onClick={() => openModal()}>
+      //           Delete
+      //         </button>
+      //       </React.Fragment>
+      //     );
+      //   }
+      // },
+      // {
+      //   sn: 6,
+      //   name: "Apil6",
+      //   resource: "/api/v1/launch",
+      //   action: "get",
+      //   fnc: () => {
+      //     return (
+      //       <React.Fragment>
+      //         <button className="btn btn-primary btn-sm" style={{ marginRight: "5px" }}>
+      //           Edit
+      //         </button>
+      //         <button className="btn btn-danger btn-sm" onClick={() => openModal()}>
+      //           Delete
+      //         </button>
+      //       </React.Fragment>
+      //     );
+      //   }
+      // }
     ],
-    modal: false,
-    modalBody: () => {
-      return (
-        <React.Fragment>
-          <form method="POST" className="form-container">
-            <style
-              dangerouslySetInnerHTML={{
-                __html: `.form-container {
-  max-width: 300px;
-  padding: 10px;
-  background-color: white;
-}
-
-
-
-.form-container .btn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom:10px;
-  opacity: 0.8;
-}
-
-.form-container .cancel {
-  background-color: red;
-}
-
-.form-container .btn:hover, .open-button:hover {
-  opacity: 1;
-}`
-              }}
-            ></style>
-            <h1>Login</h1>
-
-            <Input
-              type="email"
-              label="Email"
-              placeholder="Enter Email"
-              name="email"
-              value={state.email}
-              id="name"
-              handleChange={handleChange("email")}
-            />
-
-            <Input
-              type="password"
-              label="Password"
-              placeholder="Enter Password"
-              name="psw"
-              id="psw"
-              value={state.psw}
-              handleChange={handleChange("psw")}
-            />
-
-            <button type="submit" className="btn">
-              Login
-            </button>
-          </form>
-        </React.Fragment>
-      );
-    }
+    modal: false
   });
 
   const handleChange = name => event => {
+    event.preventDefault();
     setState({ ...state, [name]: event.target.value });
   };
 
+  const closeModal = () => {
+    setState({ ...state, ["modal"]: false });
+  };
   const openModal = () => {
     if (state.modal) {
       setState({ ...state, ["modal"]: false });
@@ -137,69 +147,110 @@ let create = () => {
     }
   };
 
+  const handleSubmit = event => {
+    event.preventDefault();
+    alert(state.name, state.email);
+  };
+
   return (
     <div className="container">
-      <form className="col-md-4" autoComplete="off">
+      <Form method="POST" handleSubmit={handleSubmit} width="40%">
         <Input
           id="p-name"
           label="Name"
           name="name"
+          type="text"
           placeholder="Permission Name"
           value={state.name}
-          handleChange={() => handleChange("name")}
+          handleChange={handleChange("name")}
         />
 
         <Input
-          required
           id="p-resource"
           label="Resource"
+          type="text"
           placeholder="Resource"
           name="resource"
           value={state.resource}
-          onChange={() => handleChange("resource")}
+          handleChange={handleChange("resource")}
         />
 
         <Input
-          required
           id="p-desc"
           label="Description"
+          type="text"
           placeholder="Description"
           name="desc"
           value={state.desc}
-          onChange={() => handleChange("desc")}
+          handleChange={handleChange("desc")}
         />
 
-        <FormControl className="form-control">
-          <InputLabel htmlFor="action">Action</InputLabel>
-          <Select
-            required
-            value={state.action}
-            onChange={handleChange("action")}
-            inputProps={{
-              name: "action",
-              id: "action"
-            }}
-          >
-            <MenuItem value={10}>GET</MenuItem>
-            <MenuItem value={20}>POST</MenuItem>
-            <MenuItem value={30}>PATCH</MenuItem>
-            <MenuItem value={40}>DELETE</MenuItem>
-            <MenuItem value={40}>PUT</MenuItem>
-          </Select>
-        </FormControl>
+        <Input
+          id="p-date"
+          label="Date"
+          type="date"
+          placeholder="Date"
+          name="date"
+          value={state.date}
+          handleChange={handleChange("date")}
+        />
+
+        <Select
+          id="p-action"
+          label="Action"
+          multiple={false}
+          name="action"
+          value={state.action}
+          handleChange={handleChange("action")}
+        >
+          <option value="get">GET</option>
+          <option value="post">POST</option>
+          <option value="patch">PATCH</option>
+          <option value="delete">DELET</option>
+          <option value="put">PUT</option>
+        </Select>
 
         <hr />
-        <FormControl className="form-control">
-          <Button variant="outlined" color="secondary" type="submit" className="button">
-            Submit
-          </Button>
-        </FormControl>
-      </form>
+        <Button label="Submit" type="submit" />
+      </Form>
       <br />
       <br />
-      <DataTable head={state.head} body={state.body} index={state.key} />
+      <DataTable
+        head={state.head}
+        body={state.body}
+        index={state.key}
+        threshold={6}
+        server={true}
+        total={state.body.length}
+        url={`http://localhost:3601/api/v1/see`}
+        headers={{}}
+      />
       <br />
-      <Modal open={state.modal} modalType="small" body={state.modalBody()} />
+      <Modal open={state.modal} type="medium" close={() => closeModal()}>
+        <Form method="POST" handleSubmit={handleSubmit} width="100%">
+          <Input
+            type="email"
+            label="Email"
+            placeholder="Enter Email"
+            name="email"
+            value={state.email}
+            id="email"
+            handleChange={handleChange("email")}
+          />
+
+          <Input
+            type="password"
+            label="Password"
+            placeholder="Enter Password"
+            name="psw"
+            id="psw"
+            value={state.psw}
+            handleChange={handleChange("psw")}
+          />
+
+          <Button type="submit" label="Login" id="login" value="login" />
+        </Form>
+      </Modal>
     </div>
   );
 };
