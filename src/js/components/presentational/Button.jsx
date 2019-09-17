@@ -1,16 +1,19 @@
 import React, { Component } from "react";
 
-const Button = ({ name, label, type, id, value, handleChange }) => {
-  const [state, setState] = React.useState({
+const Button = ({ name, label, type, id, value, handleChange, style }) => {
+  let s = {
     backgroundColor: "#fa4251",
     color: "white",
     padding: "16px 20px",
     border: "none",
     cursor: "pointer",
-    width: " 100%",
+    width: "100%",
     marginBottom: "10px",
     opacity: "0.8"
-  });
+  };
+
+  if (style) s = Object.assign(s, style);
+  const [state, setState] = React.useState({});
   const onMouseEnter = () => {
     setState({ ...state, ["opacity"]: "1" });
   };
@@ -18,20 +21,9 @@ const Button = ({ name, label, type, id, value, handleChange }) => {
     setState({ ...state, ["opacity"]: "0.8" });
   };
 
-  const { backgroundColor, color, padding, border, cursor, width, marginBottom, opacity } = state;
-
   return (
     <button
-      style={{
-        backgroundColor,
-        color,
-        padding,
-        border,
-        cursor,
-        width,
-        marginBottom,
-        opacity
-      }}
+      style={s}
       type={type}
       name={name}
       className="btn"

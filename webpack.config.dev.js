@@ -73,7 +73,7 @@ module.exports = {
     hot: true,
     inline: true,
     host: "localhost", // Defaults to `localhost`
-    port: 5000
+    port: 7000
   },
   plugins: [
     new HtmlWebpackPlugin({
