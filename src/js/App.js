@@ -6,6 +6,7 @@ import LoginContainer from "./components/container/LoginContainer.jsx";
 import RegisterContainer from "./components/container/RegisterContainer.jsx";
 import Notfound from "./components/presentational/NotFound.jsx";
 import PermissionCreate from "./components/presentational/role/PermissionCreate.jsx";
+import Role from "./components/presentational/role/Index.jsx";
 import AppCss from "../css/App.css";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Navbar />
       <Switch>
         <Route exact path="/" component={PermissionCreate} />
+        <Route path="/role" component={Role} />
         <Route path="/login" component={LoginContainer} />
         <Route path="/register" component={RegisterContainer} />
         <Route component={Notfound} />

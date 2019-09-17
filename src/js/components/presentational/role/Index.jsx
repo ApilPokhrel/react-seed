@@ -11,12 +11,10 @@ import Routes from "../../../common/Routes";
 let create = () => {
   const [state, setState] = React.useState({
     name: "",
-    resource: "",
-    method: "post",
-    url: "http://localhost:3000/auth/permission",
-    baseUrl: "http://localhost:3000",
+    permissions: [],
     desc: "",
-    head: ["S.N", "Name", "Method", "Resource", "Description", "Action"],
+    is_admin: false,
+    head: ["S.N", "Name", "Description", "Action"],
     body: [],
     filter: [
       {
@@ -31,18 +29,7 @@ let create = () => {
           return d.name || "N/A";
         }
       },
-      {
-        key: "method",
-        render: (d, i) => {
-          return d.method || "N/A";
-        }
-      },
-      {
-        key: "resource",
-        render: (d, i) => {
-          return d.resource || "N/A";
-        }
-      },
+
       {
         key: "desc",
         render: (d, i) => {
@@ -57,7 +44,7 @@ let create = () => {
               <button className="btn btn-primary" onClick={() => openModal(d._id)}>
                 Edit
               </button>
-              <button className="btn btn-warning" onClick={() => deletePerm(d._id)}>
+              <button className="btn btn-warning" onClick={() => deleteRole(d._id)}>
                 Del
               </button>
             </div>
@@ -66,7 +53,7 @@ let create = () => {
       }
     ],
     reload: false,
-    perm_id: "",
+    role_id: "",
     modal: false,
     addModal: false
   });
@@ -80,25 +67,24 @@ let create = () => {
     setState({ ...state, ["modal"]: false, ["addModal"]: false });
   };
 
-  const deletePerm = async id => {
-    await Api.init(Routes.permission.delete.remove(id), {});
-    alert("Permission Deleted");
+  const deleteRole = async id => {
+    await Api.init(Routes.role.delete.remove(id), {});
+    alert("Role Deleted");
   };
   const openModal = async id => {
     if (state.modal) {
       setState({ ...state, ["modal"]: false });
     } else {
       let {
-        data: { _id, name, method, resource, desc }
-      } = await Api.init(Routes.permission.get.detail(id), state);
+        data: { _id, name, permissions, desc }
+      } = await Api.init(Routes.role.get.detail(id), state);
       setState({
         ...state,
         ["modal"]: true,
         ["name"]: name,
-        ["method"]: method.toLowerCase(),
-        ["resource"]: resource,
         ["desc"]: desc,
-        ["perm_id"]: _id
+        ["role_id"]: _id,
+        ["permissions"]: permissions
       });
     }
   };
@@ -113,24 +99,25 @@ let create = () => {
 
   const handleSubmit = async event => {
     event.preventDefault();
-    alert("Permission Created");
+    let {
+      data: { name, permissions, desc }
+    } = await Api.init(Routes.role.post.create(), state);
+    alert("Role Created");
   };
 
   const handleEdit = async event => {
     event.preventDefault();
     let {
-      data: { name, method, resource, desc }
+      data: { name, permissions, desc }
     } = await Api.init(Routes.permission.patch.edit(state.perm_id), state);
     setState({
       ...state,
       ["modal"]: true,
       ["name"]: name,
-      ["method"]: method.toLowerCase(),
-      ["resource"]: resource,
       ["desc"]: desc,
-      ["reload"]: true
+      ["permissions"]: permissions
     });
-    alert("Permission Edited");
+    alert("Role Edited");
   };
 
   return (
@@ -140,27 +127,17 @@ let create = () => {
       <Modal open={state.addModal} type="medium" close={() => closeModal()}>
         <Form method="POST" handleSubmit={handleSubmit} width="100%">
           <Input
-            id="p-name"
+            id="r-name"
             label="Name"
             name="name"
             type="text"
-            placeholder="Permission Name"
+            placeholder="Role Name"
             value={state.name}
             handleChange={handleChange("name")}
           />
 
           <Input
-            id="p-resource"
-            label="Resource"
-            type="text"
-            placeholder="Resource"
-            name="resource"
-            value={state.resource}
-            handleChange={handleChange("resource")}
-          />
-
-          <Input
-            id="p-desc"
+            id="r-desc"
             label="Description"
             type="text"
             placeholder="Description"
@@ -168,21 +145,6 @@ let create = () => {
             value={state.desc}
             handleChange={handleChange("desc")}
           />
-
-          <Select
-            id="p-action"
-            label="Action"
-            multiple={false}
-            name="action"
-            value={state.method}
-            handleChange={handleChange("method")}
-          >
-            <option value="get">GET</option>
-            <option value="post">POST</option>
-            <option value="patch">PATCH</option>
-            <option value="delete">DELETE</option>
-            <option value="put">PUT</option>
-          </Select>
 
           <hr />
           <Button label="Submit" type="submit" />
@@ -201,34 +163,24 @@ let create = () => {
         threshold={10}
         server={true}
         total={5}
-        url={`http://localhost:3000/auth/permission`}
+        url={`http://localhost:3000/auth/role`}
         headers={{}}
         reload={state.reload}
       />
       <Modal open={state.modal} type="medium" close={() => closeModal()}>
         <Form method="POST" handleSubmit={handleEdit} width="100%">
           <Input
-            id="p-name"
+            id="r-name"
             label="Name"
             name="name"
             type="text"
-            placeholder="Permission Name"
+            placeholder="Role Name"
             value={state.name}
             handleChange={handleChange("name")}
           />
 
           <Input
-            id="p-resource"
-            label="Resource"
-            type="text"
-            placeholder="Resource"
-            name="resource"
-            value={state.resource}
-            handleChange={handleChange("resource")}
-          />
-
-          <Input
-            id="p-desc"
+            id="r-desc"
             label="Description"
             type="text"
             placeholder="Description"
@@ -236,21 +188,6 @@ let create = () => {
             value={state.desc}
             handleChange={handleChange("desc")}
           />
-
-          <Select
-            id="p-action"
-            label="Action"
-            multiple={false}
-            name="action"
-            value={state.method}
-            handleChange={handleChange("method")}
-          >
-            <option value="get">GET</option>
-            <option value="post">POST</option>
-            <option value="patch">PATCH</option>
-            <option value="delete">DELETE</option>
-            <option value="put">PUT</option>
-          </Select>
 
           <hr />
           <Button label="Submit" type="submit" width="100%" />

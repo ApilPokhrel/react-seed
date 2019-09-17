@@ -21,9 +21,9 @@ const Navbar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <a className="nav-link disabled" href="#">
-            Disabled
-          </a>
+          <Link className="nav-link" to="/role">
+            Role
+          </Link>
         </li>
       </ul>
     </nav>

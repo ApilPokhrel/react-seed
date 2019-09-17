@@ -1,92 +1,62 @@
 import React, { Component } from "react";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import IconButton from "@material-ui/core/IconButton";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import InputLabel from "@material-ui/core/InputLabel";
-import Button from "@material-ui/core/Button";
+import Input from "../presentational/Input.jsx";
+import Form from "../presentational/Form.jsx";
+import Button from "../presentational/Button.jsx";
+import Api from "../../common/ApiService";
+import Routes from "../../common/Routes";
 
 class LoginContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       email: "",
-      password: "",
-      showPassword: false
+      password: ""
     };
     this.handleChange = this.handleChange.bind(this);
-    (this.handleClickShowPassword = this.handleClickShowPassword.bind(this)),
-      (this.handleMouseDownPassword = this.handleMouseDownPassword.bind(this));
-  }
-
-  handleClickShowPassword() {
-    this.setState({
-      password: this.state.password,
-      showPassword: !this.state.showPassword
-    });
-  }
-
-  handleMouseDownPassword(event) {
-    event.preventDefault();
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+  async handleSubmit(event) {
+    event.preventDefault();
+    let {
+      data: { accessToken, refreshToken }
+    } = await Api.init(Routes.user.post.login(), this.state);
+    localStorage.setItem("access_token", accessToken);
+    localStorage.setItem("refresh_token", refreshToken);
+  }
+
   render() {
-    const { email, password, showPassword } = this.state;
+    const { email, password } = this.state;
     return (
       <div className="container">
-        <form
-          role="form"
-          id="register-form"
-          onSubmit={this.submit}
-          className="col-md-4"
-          method="post"
-        >
-          <FormControl className="form-control">
-            <TextField
-              id="email"
-              name="email"
-              label="Email"
-              value={email}
-              onChange={this.handleChange}
-              margin="normal"
-            />
-          </FormControl>
+        <Form method="POST" handleSubmit={this.handleSubmit} width="40%">
+          <Input
+            id="email"
+            label="Email"
+            type="text"
+            placeholder="Email..."
+            name="email"
+            value={email}
+            handleChange={this.handleChange}
+          />
 
-          <FormControl className="form-control">
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={this.handleChange}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={this.handleClickShowPassword}
-                    onMouseDown={this.handleMouseDownPassword}
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-          </FormControl>
+          <Input
+            id="password"
+            label="Password"
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={password}
+            handleChange={this.handleChange}
+          />
+
           <hr />
-          <FormControl className="form-control">
-            <Button variant="outlined" color="secondary" type="submit" className="button">
-              Submit
-            </Button>
-          </FormControl>
-        </form>
+          <Button label="Submit" type="submit" />
+        </Form>
       </div>
     );
   }

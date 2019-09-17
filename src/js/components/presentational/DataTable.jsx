@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import Axios from "axios";
+import SkeletonLine from "./Skeleton.jsx";
+
 class DataTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
       body: props.body,
       head: props.head,
-      key: props.index,
       page: 1,
       threshold: props.threshold,
       start: 0,
@@ -15,7 +15,9 @@ class DataTable extends Component {
       server: props.server,
       url: props.url,
       header: props.header,
-      total: props.total
+      total: props.total || props.body.length,
+      filter: props.filter,
+      reload: props.reload
     };
     this.serverLoad = this.serverLoad.bind(this);
   }
@@ -23,9 +25,8 @@ class DataTable extends Component {
   showPagination() {
     let quotient = parseInt(this.state.total / this.state.threshold);
     let reminder = this.state.total - this.state.threshold * quotient;
-    // alert(quotient);
     let len = quotient + 1 + 1;
-    if (len > 0) len = len - 1;
+    if (len > 0) len = len - 2; // changed len -1 to len - 2
     if (len <= 20) {
       return (
         <React.Fragment>
@@ -72,21 +73,42 @@ class DataTable extends Component {
   }
 
   async serverLoad(limit, start) {
-    if (this.state.server) {
-      this.setState({
-        body: []
-      });
-      let res = await Axios({
-        url: this.state.url + "?start=" + start + "&limit=" + limit,
-        method: "get",
-        headers: {
-          "Access-Control-Allow-Origin": "http://localhost:5000/"
-        }
-      });
-      this.setState({
-        total: res.data.total,
-        body: res.data.data
-      });
+    try {
+      if (this.state.server) {
+        this.setState({
+          body: []
+        });
+        let {
+          data: { total, data }
+        } = await Axios({
+          url: this.state.url + "?start=" + start + "&limit=" + limit,
+          method: "get",
+          headers: { token: localStorage.getItem("access_token") }
+        });
+        this.setState({
+          total: total || this.state.total,
+          body: data
+        });
+      }
+    } catch (err) {
+      if (err.response.status == 403) {
+        let d = { refreshtoken: localStorage.getItem("refresh_token") };
+        let { data } = await Axios({
+          url: `http://localhost:3000/auth/grant`,
+          method: "post",
+          data: d
+        });
+        localStorage.setItem("access_token", data);
+        let res = await Axios({
+          url: this.state.url + "?start=" + start + "&limit=" + limit,
+          method: "get",
+          headers: { token: data }
+        });
+        this.setState({
+          total: res.data.total || this.state.total,
+          body: res.data.data
+        });
+      }
     }
   }
 
@@ -100,7 +122,8 @@ class DataTable extends Component {
     let page = this.state.page + 1;
     let start = this.state.start + this.state.threshold;
     let end = this.state.end + this.state.threshold;
-    if (start + reminder <= this.state.total) {
+    if (start + reminder < this.state.total) {
+      //changed <= to  <
       this.setState({ page, start, end });
       await this.serverLoad(this.state.threshold, start);
     } else {
@@ -112,7 +135,6 @@ class DataTable extends Component {
   async thisPage(page) {
     let start = page * this.state.threshold - this.state.threshold;
     let end = start + this.state.threshold;
-    // alert(`${page}, ${start}, ${end}`);
     this.setState({ page, start, end });
     await this.serverLoad(this.state.threshold, start);
   }
@@ -121,7 +143,7 @@ class DataTable extends Component {
     let page = this.state.page - 1;
     let start = this.state.start - this.state.threshold;
     let end = this.state.end - this.state.threshold;
-    if (start <= this.state.threshold) {
+    if (start < this.state.threshold - 1) {
       this.setState({ page: 1, start: 0, end: this.state.threshold });
     } else {
       this.setState({ page, start, end });
@@ -130,10 +152,11 @@ class DataTable extends Component {
   }
 
   render() {
-    const { head, key, body, start, end, threshold } = this.state;
+    const { head, body, start, end, threshold, filter } = this.state;
 
     return (
       <React.Fragment>
+        <SkeletonLine translucent={false} />
         <style
           dangerouslySetInnerHTML={{
             __html: `a {
@@ -306,36 +329,42 @@ class DataTable extends Component {
               </tr>
             </thead>
             <tbody>
-              {body && body.length ? (
-                Array.apply(0, Array(threshold)).map((e, i) => {
-                  return (
-                    <tr className="row100" key={`body_${i}`}>
-                      {key.map((k, index) => {
-                        if (body[i] && body[i].hasOwnProperty(k)) {
-                          let classText = `column100 column${index + 1}`;
-                          if (typeof body[i][k] === "function") {
-                            return (
-                              <td key={"fun" + index + i} className={classText}>
-                                {body[i][k]()}
-                              </td>
-                            );
-                          } else {
-                            return (
-                              <td key={k + index + i} className={classText}>
-                                {body[i][k]}
-                              </td>
-                            );
+              {body && body.length
+                ? Array.apply(0, Array(threshold)).map((e, i) => {
+                    return (
+                      <tr className="row100" key={`body_${i}`}>
+                        {filter.map((f, index) => {
+                          if (body[i]) {
+                            let classText = `column100 column${index + 1}`;
+                            if (typeof body[i][index] === "function") {
+                              return (
+                                <td key={"fun" + index + i} className={classText}>
+                                  {f.render(body[i], start + i)}
+                                </td>
+                              );
+                            } else {
+                              return (
+                                <td key={index + i} className={classText}>
+                                  {f.render(body[i], start + i)}
+                                </td>
+                              );
+                            }
                           }
-                        }
-                      })}
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td>Loading.......</td>
-                </tr>
-              )}
+                        })}
+                      </tr>
+                    );
+                  })
+                : Array(threshold)
+                    .fill(null)
+                    .map((e, i) => {
+                      return (
+                        <tr key={i}>
+                          <td key={`td_${i}`}>
+                            <SkeletonLine translucent={true} />
+                          </td>
+                        </tr>
+                      );
+                    })}
             </tbody>
           </table>
         </div>
@@ -363,7 +392,7 @@ class DataTable extends Component {
 .pagination button:hover:not(.active) {background-color: #ddd;}`
             }}
           ></style>
-          <div style={{}} className="pagination">
+          <div className="pagination">
             <button onClick={() => this.previousPage()}>&laquo;</button>
             {this.showPagination()}
             <button onClick={() => this.nextPage()}>&raquo;</button>
@@ -373,12 +402,5 @@ class DataTable extends Component {
     );
   }
 }
-
-DataTable.propTypes = {
-  // body: PropTypes.isRequired,
-  // head: PropTypes.isRequired,
-  // index: PropTypes.isRequired,
-  // limit: PropTypes.number.isRequired
-};
 
 export default DataTable;
