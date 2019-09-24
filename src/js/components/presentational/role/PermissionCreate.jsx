@@ -81,8 +81,7 @@ let create = () => {
   };
 
   const deletePerm = async id => {
-    await Api.init(Routes.permission.delete.remove(id), {});
-    alert("Permission Deleted");
+    if (confirm("Delete Permission")) await Api.init(Routes.permission.delete.remove(id), {});
   };
   const openModal = async id => {
     if (state.modal) {
@@ -135,8 +134,6 @@ let create = () => {
 
   return (
     <div className="container">
-      <input type="hidden" value="" id="perm_id" />
-
       <Modal open={state.addModal} type="medium" close={() => closeModal()}>
         <Form method="POST" handleSubmit={handleSubmit} width="100%">
           <Input
@@ -144,7 +141,6 @@ let create = () => {
             label="Name"
             name="name"
             type="text"
-            placeholder="Permission Name"
             value={state.name}
             handleChange={handleChange("name")}
           />
@@ -192,7 +188,7 @@ let create = () => {
         label="Add"
         type="button"
         handleChange={() => openAddModal()}
-        style={{ width: "200px" }}
+        style={{ width: "200px", float: "right" }}
       />
       <DataTable
         head={state.head}
@@ -242,7 +238,7 @@ let create = () => {
             label="Action"
             multiple={false}
             name="action"
-            value={state.method}
+            defaultValue={state.method}
             handleChange={handleChange("method")}
           >
             <option value="get">GET</option>
