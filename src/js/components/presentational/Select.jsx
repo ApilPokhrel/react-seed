@@ -23,27 +23,26 @@ class Select extends Component {
   render() {
     let { label, multiple, name, id, handleChange } = this.props;
     return (
-      <React.Fragment>
-        <label htmlFor={name}>{label}</label>
+      <div className="form-group">
         <select
-          style={{
-            width: this.state.width,
-            padding: this.state.padding,
-            margin: this.state.margin,
-            border: this.state.border,
-            background: this.state.background,
-            outline: this.state.outline
-          }}
           name={name}
+          className="form-control"
           onFocus={() => this.onFocus()}
           onBlur={() => this.onBlur()}
           id={id}
           multiple={multiple}
           onChange={handleChange}
+          defaultValue={this.props.defaultValue}
         >
           {this.props.children}
         </select>
-      </React.Fragment>
+        <label
+          style={{ marginLeft: "25px", fontSize: "12px", color: "#777", fontWeight: "bold" }}
+          htmlFor={name}
+        >
+          {label}
+        </label>
+      </div>
     );
   }
 }

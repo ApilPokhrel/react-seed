@@ -8,14 +8,15 @@ import Select from "../Select.jsx";
 import Api from "../../../common/ApiService";
 import Routes from "../../../common/Routes";
 
-let create = () => {
+let create = props => {
   const [state, setState] = React.useState({
     name: "",
     permissions: [],
     desc: "",
     is_admin: false,
-    head: ["S.N", "Name", "Description", "Action"],
+    head: ["S.N", "Name", "Description", "Permissions", "Action"],
     body: [],
+    options: "",
     filter: [
       {
         key: "sn",
@@ -37,6 +38,14 @@ let create = () => {
         }
       },
       {
+        key: "permissions",
+        render: (d, i) => {
+          return d.permissions.map((e, i) => {
+            return `${e.name}, \n`;
+          });
+        }
+      },
+      {
         key: "action",
         render: (d, i) => {
           return (
@@ -55,12 +64,29 @@ let create = () => {
     reload: false,
     role_id: "",
     modal: false,
-    addModal: false
+    addModal: false,
+    perms: []
   });
+
+  React.useEffect(() => {
+    getPermissions();
+  }, []);
 
   const handleChange = name => event => {
     event.preventDefault();
     setState({ ...state, [name]: event.target.value });
+  };
+
+  const handleSelect = name => event => {
+    event.preventDefault();
+    var options = event.target.options;
+    var value = [];
+    for (var i = 0, l = options.length; i < l; i++) {
+      if (options[i].selected) {
+        value.push(options[i].value);
+      }
+    }
+    setState({ ...state, [name]: value });
   };
 
   const closeModal = () => {
@@ -68,8 +94,10 @@ let create = () => {
   };
 
   const deleteRole = async id => {
-    await Api.init(Routes.role.delete.remove(id), {});
-    alert("Role Deleted");
+    if (confirm("delete role")) {
+      await Api.init(Routes.role.delete.remove(id), {});
+      alert("Role Deleted");
+    }
   };
   const openModal = async id => {
     if (state.modal) {
@@ -78,15 +106,27 @@ let create = () => {
       let {
         data: { _id, name, permissions, desc }
       } = await Api.init(Routes.role.get.detail(id), state);
+      let opt = await generateOptions();
       setState({
         ...state,
         ["modal"]: true,
         ["name"]: name,
         ["desc"]: desc,
         ["role_id"]: _id,
-        ["permissions"]: permissions
+        ["permissions"]: permissions,
+        ["options"]: opt
       });
     }
+  };
+  const generateOptions = async () => {
+    let perms = await getPermissions();
+    return perms.map((e, i) => {
+      return (
+        <option key={i} value={e._id}>
+          {e.name}
+        </option>
+      );
+    });
   };
 
   const openAddModal = () => {
@@ -95,6 +135,12 @@ let create = () => {
     } else {
       setState({ ...state, ["addModal"]: true });
     }
+  };
+
+  const getPermissions = async () => {
+    let perms = await Api.init(Routes.permission.get.search(), {});
+    setState({ ...state, ["perms"]: perms.data });
+    return perms.data;
   };
 
   const handleSubmit = async event => {
@@ -107,17 +153,19 @@ let create = () => {
 
   const handleEdit = async event => {
     event.preventDefault();
-    let {
-      data: { name, permissions, desc }
-    } = await Api.init(Routes.permission.patch.edit(state.perm_id), state);
-    setState({
-      ...state,
-      ["modal"]: true,
-      ["name"]: name,
-      ["desc"]: desc,
-      ["permissions"]: permissions
-    });
-    alert("Role Edited");
+    if (confirm("Edit role")) {
+      let {
+        data: { name, permissions, desc }
+      } = await Api.init(Routes.role.patch.edit(state.role_id), state);
+      setState({
+        ...state,
+        ["modal"]: false,
+        ["name"]: name,
+        ["desc"]: desc,
+        ["permissions"]: permissions
+      });
+      props.history.push(location.pathname);
+    }
   };
 
   return (
@@ -125,7 +173,7 @@ let create = () => {
       <input type="hidden" value="" id="perm_id" />
 
       <Modal open={state.addModal} type="medium" close={() => closeModal()}>
-        <Form method="POST" handleSubmit={handleSubmit} width="100%">
+        <Form method="POST" handleSubmit={handleSubmit}>
           <Input
             id="r-name"
             label="Name"
@@ -146,6 +194,21 @@ let create = () => {
             handleChange={handleChange("desc")}
           />
 
+          <Select
+            id="p-permissions"
+            label="Permissions"
+            multiple={true}
+            name="permissions"
+            value={state.permissions}
+            handleChange={handleSelect("permissions")}
+          >
+            {state.perms.map((e, i) => (
+              <option key={i} value={e._id}>
+                {e.name}
+              </option>
+            ))}
+          </Select>
+
           <hr />
           <Button label="Submit" type="submit" />
         </Form>
@@ -154,7 +217,7 @@ let create = () => {
         label="Add"
         type="button"
         handleChange={() => openAddModal()}
-        style={{ width: "200px" }}
+        style={{ width: "200px", float: "right" }}
       />
       <DataTable
         head={state.head}
@@ -188,6 +251,19 @@ let create = () => {
             value={state.desc}
             handleChange={handleChange("desc")}
           />
+
+          <Select
+            id="p-permissions"
+            label="Permissions"
+            multiple={true}
+            name="permissions"
+            defaultValue={state.permissions}
+            options={state.options}
+            value={state.permissions}
+            handleChange={handleSelect("permissions")}
+          >
+            {state.options}
+          </Select>
 
           <hr />
           <Button label="Submit" type="submit" width="100%" />

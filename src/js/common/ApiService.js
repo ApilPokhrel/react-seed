@@ -18,17 +18,19 @@ export default {
     let access_token = localStorage.getItem("access_token");
     let refresh_token = localStorage.getItem("refresh_token");
     var headers = { token: access_token };
-    data.token = access_token;
+    if (data) data.token = access_token;
     try {
       result = await call(fullUrl, method, headers, data);
     } catch (err) {
-      if (errerr.response.status === 403) {
+      if (err.response.status === 403) {
         let d = { refreshtoken: refresh_token };
         result = await call(`${Config.api.base.url}/auth/grant`, "post", headers, d);
         access_token = result.data;
         headers = { token: access_token };
         localStorage.setItem("access_token", access_token);
         return call(fullUrl, method, headers, data);
+      } else {
+        return err;
       }
     }
     return result;

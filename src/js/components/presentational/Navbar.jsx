@@ -1,32 +1,58 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
+import { IoMdHome, IoIosKey, IoIosKeypad, IoIosLogIn } from "react-icons/io";
 
 const Navbar = () => {
   return (
-    <nav className="navbar navbar-expand-sm bg-dark navbar-dark">
-      <ul className="navbar-nav">
-        <li className="nav-item active">
-          <Link className="nav-link" to="/">
-            Home
+    <React.Fragment>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow fixed-top">
+        <div className="container">
+          <Link className="navbar-brand" to="/">
+            Admin
           </Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/login">
-            Login
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/register">
-            Register
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/role">
-            Role
-          </Link>
-        </li>
-      </ul>
-    </nav>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarResponsive"
+            aria-controls="navbarResponsive"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarResponsive">
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item active">
+                <Link className="nav-link" to="/">
+                  <IoMdHome />
+                  <span className="sr-only">(current)</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/role">
+                  <IoIosKey />
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/permission">
+                  <IoIosKeypad />
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">
+                  <IoIosLogIn />
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <br />
+      <br />
+      <br />
+    </React.Fragment>
   );
 };
 

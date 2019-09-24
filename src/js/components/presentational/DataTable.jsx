@@ -168,7 +168,7 @@ class DataTable extends Component {
             }
             
             a:focus {
-              outline: none !important;
+              outline: none ;
             }
             
             a:hover {
@@ -197,7 +197,7 @@ class DataTable extends Component {
             input {
               display: block;
               outline: none;
-              border: none !important;
+              border: none ;
             }
             
             textarea {
@@ -207,11 +207,11 @@ class DataTable extends Component {
             
             textarea:focus,
             input:focus {
-              border-color: transparent !important;
+              border-color: transparent ;
             }
             
             button {
-              outline: none !important;
+              outline: none ;
               border: none;
               background: transparent;
             }
@@ -360,7 +360,7 @@ class DataTable extends Component {
                       return (
                         <tr key={i}>
                           <td key={`td_${i}`}>
-                            <SkeletonLine translucent={true} />
+                            <div className="line"></div>
                           </td>
                         </tr>
                       );

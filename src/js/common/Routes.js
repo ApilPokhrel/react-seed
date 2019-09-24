@@ -3,6 +3,12 @@ export default {
     get: {
       detail: id => {
         return { url: `/auth/permission/${id}`, method: "GET" };
+      },
+      search: (type, value) => {
+        return {
+          url: `/auth/permission/search?type=${type}&value=${value}`,
+          method: "GET"
+        };
       }
     },
     post: {
@@ -26,6 +32,12 @@ export default {
     get: {
       detail: id => {
         return { url: `/auth/role/${id}`, method: "GET" };
+      },
+      search: (type, value) => {
+        return {
+          url: `/auth/role/search?type=${type}&value=${value}`,
+          method: "GET"
+        };
       }
     },
     post: {
@@ -52,6 +64,19 @@ export default {
       },
       register: () => {
         return { url: `/user/register`, method: "POST" };
+      }
+    },
+    get: {
+      list: () => {
+        return { url: `/user/`, method: "GET" };
+      },
+      detail: id => {
+        return { url: `/user/${id}`, method: "GET" };
+      }
+    },
+    patch: {
+      edit: id => {
+        return { url: `/user/${id}`, method: "PATCH" };
       }
     }
   }

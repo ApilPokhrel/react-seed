@@ -2,12 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 const Input = ({ name, label, type, id, value, placeholder, handleChange }) => {
   const [state, setState] = React.useState({
-    width: "100%",
-    padding: "15px",
-    margin: "5px 0 22px 0",
-    border: "none",
-    background: "#f1f1f1",
-    outline: "none",
     err: false,
     errMsg: ""
   });
@@ -20,29 +14,20 @@ const Input = ({ name, label, type, id, value, placeholder, handleChange }) => {
     setState({ ...state, ["background"]: "#f1f1f1" });
   };
   return (
-    <div className="form-group">
-      <label htmlFor={name}>
-        <b>{label}</b>
-      </label>
+    <div className="form-label-group">
       <input
-        style={{
-          width: state.width,
-          padding: state.padding,
-          margin: state.margin,
-          border: state.border,
-          background: state.background,
-          outline: state.outline
-        }}
         onFocus={() => onFocus()}
         onBlur={() => onBlur()}
         type={type}
         id={id}
+        className="form-control"
         value={value}
         name={name}
         placeholder={placeholder || ""}
         onChange={handleChange}
         required
       />
+      <label htmlFor={id}>{label}</label>
       {state.err ? (
         <h3 style={{ color: "red" }}>{state.errMsg}</h3>
       ) : (

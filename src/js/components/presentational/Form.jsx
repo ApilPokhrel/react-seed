@@ -7,7 +7,7 @@ class Form extends Component {
 
   render() {
     return (
-      <React.Fragment>
+      <div>
         <style
           dangerouslySetInnerHTML={{
             __html: `.form-container {
@@ -21,12 +21,11 @@ class Form extends Component {
         <form
           method={this.props.method}
           onSubmit={this.props.handleSubmit}
-          className="form-container"
+          className="form-container form-signin"
         >
-          <h1>{this.props.title || ""}</h1>
           {this.props.children}
         </form>
-      </React.Fragment>
+      </div>
     );
   }
 }
